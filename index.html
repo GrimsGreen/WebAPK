@@ -1,21 +1,1236 @@
 <!DOCTYPE html>
-<html lang="en">
-	<head>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width,height=device-height,initial-scale=1">
-		<meta name="Description" content="This is a simple chrome WebAPK template.">
-		<title>WebAPK</title>
-		<link rel="icon" type="image/png" href="logo.png">
-		<link rel="manifest" href="manifest.json">
-		<link rel="stylesheet" type="text/css" href="css/main.css">
-	</head>
-	<body>
-		<h1>
-			<span>Chrome WebAPK</span>
-		</h1>
-		<p>This is a simple chrome WebAPK template.</p>
-		<span id="connection"><abbr title="You are online!">&#128246;</abbr></span>
-		<script src="js/jquery.min.js"></script>
-		<script src="js/main.js"></script>		
-	</body>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#000000">
+    <meta name="description" content="بازار ویندکس - خرید و فروش آنلاین کالاهای لوکس">
+    <title>بازار ویندکس</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        gold: '#D4AF37',
+                        dark: '#121212',
+                        darker: '#0A0A0A',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --primary: #D4AF37;
+            --secondary: #B8860B;
+            --dark: #121212;
+            --darker: #0A0A0A;
+            --light: #F5F5F5;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+            --gray: #6B7280;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Vazirmatn', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--darker);
+            color: var(--light);
+            line-height: 1.6;
+            text-align: right;
+            direction: rtl;
+            padding-bottom: 80px;
+        }
+
+        /* PWA Styles */
+        .app-container {
+            max-width: 100%;
+            overflow-x: hidden;
+            background-color: var(--dark);
+        }
+
+        .app-header {
+            background-color: var(--darker);
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 0.8rem 1rem;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .app-logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .app-logo i {
+            margin-left: 10px;
+            color: var(--primary);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 0.8rem;
+        }
+
+        .icon-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(212, 175, 55, 0.1);
+            border: none;
+            color: var(--primary);
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .icon-btn:hover {
+            background-color: rgba(212, 175, 55, 0.2);
+        }
+
+        .badge {
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            background-color: var(--danger);
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid var(--darker);
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: var(--darker);
+            border-top: 1px solid rgba(212, 175, 55, 0.2);
+            display: flex;
+            justify-content: space-around;
+            padding: 0.8rem 0;
+            z-index: 100;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: var(--gray);
+            font-size: 0.8rem;
+            padding: 0.5rem;
+            flex: 1;
+            transition: all 0.3s;
+        }
+
+        .nav-item i {
+            font-size: 1.4rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .nav-item.active {
+            color: var(--primary);
+            transform: translateY(-5px);
+        }
+
+        .nav-item.active i {
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+        }
+
+        /* Main Content */
+        .page {
+            display: none;
+            padding: 1rem;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Home Page */
+        .search-container {
+            margin: 1rem 0;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.9rem 1.2rem;
+            padding-left: 3.5rem;
+            border: none;
+            border-radius: 30px;
+            background-color: rgba(255, 255, 255, 0.05);
+            color: var(--light);
+            font-size: 0.95rem;
+            transition: all 0.3s;
+            border: 1px solid rgba(212, 175, 55, 0.1);
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
+        }
+
+        .search-input::placeholder {
+            color: var(--gray);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1.2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary);
+        }
+
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.8rem;
+            margin: 1.5rem 0;
+        }
+
+        .category-card {
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 1rem 0.5rem;
+            text-align: center;
+            border: 1px solid rgba(212, 175, 55, 0.1);
+            transition: all 0.3s;
+        }
+
+        .category-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            border-color: var(--primary);
+        }
+
+        .category-icon {
+            width: 50px;
+            height: 50px;
+            background-color: rgba(212, 175, 55, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 0.8rem;
+            color: var(--primary);
+            font-size: 1.2rem;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+        }
+
+        .category-name {
+            font-size: 0.8rem;
+            color: var(--light);
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin: 1.5rem 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--primary);
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 50px;
+            height: 2px;
+            background-color: var(--primary);
+        }
+
+        .see-all {
+            font-size: 0.85rem;
+            color: var(--primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+
+        .see-all i {
+            margin-right: 0.3rem;
+            font-size: 0.8rem;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .product-card {
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s;
+            border: 1px solid rgba(212, 175, 55, 0.1);
+            position: relative;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+            border-color: var(--primary);
+        }
+
+        .product-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background-color: var(--primary);
+            color: var(--darker);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            z-index: 2;
+        }
+
+        .product-image {
+            width: 100%;
+            height: 140px;
+            object-fit: cover;
+            transition: all 0.3s;
+        }
+
+        .product-card:hover .product-image {
+            transform: scale(1.05);
+        }
+
+        .product-details {
+            padding: 0.8rem;
+        }
+
+        .product-price {
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .product-title {
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            color: var(--light);
+        }
+
+        .product-location {
+            font-size: 0.75rem;
+            color: var(--gray);
+            display: flex;
+            align-items: center;
+        }
+
+        .product-location i {
+            margin-left: 0.3rem;
+            font-size: 0.7rem;
+        }
+
+        /* Messages Page */
+        .messages-list {
+            margin-top: 1.5rem;
+        }
+
+        .message-card {
+            display: flex;
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s;
+            border: 1px solid rgba(212, 175, 55, 0.1);
+        }
+
+        .message-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            border-color: var(--primary);
+        }
+
+        .message-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: rgba(212, 175, 55, 0.1);
+            margin-left: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-size: 1.2rem;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+        }
+
+        .message-content {
+            flex: 1;
+        }
+
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .message-sender {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--light);
+        }
+
+        .message-time {
+            font-size: 0.75rem;
+            color: var(--gray);
+        }
+
+        .message-text {
+            font-size: 0.85rem;
+            color: var(--gray);
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .unread-badge {
+            width: 10px;
+            height: 10px;
+            background-color: var(--primary);
+            border-radius: 50%;
+            margin-right: 0.5rem;
+        }
+
+        /* Add Product Page */
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.6rem;
+            font-weight: 500;
+            font-size: 0.95rem;
+            color: var(--light);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.9rem;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 10px;
+            font-size: 0.95rem;
+            background-color: rgba(255, 255, 255, 0.05);
+            color: var(--light);
+            transition: all 0.3s;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
+        }
+
+        .form-control::placeholder {
+            color: var(--gray);
+        }
+
+        .image-upload {
+            border: 2px dashed rgba(212, 175, 55, 0.3);
+            border-radius: 12px;
+            padding: 2.5rem;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .image-upload:hover {
+            border-color: var(--primary);
+            background-color: rgba(212, 175, 55, 0.05);
+        }
+
+        .image-upload i {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 0.8rem;
+        }
+
+        .image-upload-text {
+            font-size: 0.95rem;
+            color: var(--gray);
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 1rem;
+            border-radius: 10px;
+            font-weight: 600;
+            text-align: center;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: var(--darker);
+        }
+
+        .btn-primary:hover {
+            background-color: #C9A227;
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
+        }
+
+        /* Profile Page */
+        .profile-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background-color: rgba(212, 175, 55, 0.1);
+            margin: 0 auto 1rem;
+            position: relative;
+            border: 2px solid var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            color: var(--primary);
+        }
+
+        .edit-avatar {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 30px;
+            height: 30px;
+            background-color: var(--primary);
+            color: var(--darker);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            border: 2px solid var(--dark);
+        }
+
+        .profile-name {
+            font-weight: 700;
+            font-size: 1.3rem;
+            margin-bottom: 0.3rem;
+            color: var(--light);
+        }
+
+        .profile-location {
+            font-size: 0.9rem;
+            color: var(--gray);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .profile-location i {
+            margin-left: 0.5rem;
+            color: var(--primary);
+        }
+
+        .profile-stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 2rem 0;
+            text-align: center;
+            background-color: rgba(255, 255, 255, 0.05);
+            padding: 1.5rem 0;
+            border-radius: 12px;
+            border: 1px solid rgba(212, 175, 55, 0.1);
+        }
+
+        .stat-value {
+            font-weight: 700;
+            font-size: 1.3rem;
+            margin-bottom: 0.3rem;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+
+        .profile-menu {
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 0.5rem 0;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(212, 175, 55, 0.1);
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            text-decoration: none;
+            color: var(--light);
+            transition: all 0.3s;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        .menu-item:last-child {
+            border-bottom: none;
+        }
+
+        .menu-item:hover {
+            background-color: rgba(212, 175, 55, 0.05);
+        }
+
+        .menu-item i {
+            margin-left: 1rem;
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+
+        .menu-item-text {
+            flex: 1;
+            font-size: 0.95rem;
+        }
+
+        .menu-item-arrow {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        /* Offline Support */
+        .offline-notice {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background-color: var(--danger);
+            color: white;
+            text-align: center;
+            padding: 0.8rem;
+            font-size: 0.95rem;
+            z-index: 1000;
+            display: none;
+        }
+
+        /* Splash Screen */
+        .splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--darker);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            transition: opacity 0.5s ease;
+        }
+
+        .splash-logo {
+            font-size: 3.5rem;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .splash-text {
+            color: var(--primary);
+            font-size: 1.5rem;
+            margin-bottom: 3rem;
+            font-weight: 600;
+        }
+
+        .splash-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(212, 175, 55, 0.2);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (min-width: 768px) {
+            .app-container {
+                max-width: 480px;
+                margin: 0 auto;
+                box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+                position: relative;
+                height: 100vh;
+                overflow-y: auto;
+            }
+
+            .bottom-nav {
+                max-width: 480px;
+                left: 50%;
+                transform: translateX(-50%);
+                border-radius: 20px 20px 0 0;
+                margin: 0 auto;
+                width: 480px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Splash Screen -->
+    <div class="splash-screen" id="splash-screen">
+        <div class="splash-logo">
+            <i class="fas fa-gem"></i>
+        </div>
+        <div class="splash-text">بازار لوکس</div>
+        <div class="splash-spinner"></div>
+    </div>
+
+    <!-- Offline Notice -->
+    <div class="offline-notice" id="offline-notice">
+        <i class="fas fa-wifi"></i> شما در حالت آفلاین هستید
+    </div>
+
+    <!-- App Container -->
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-content">
+                <a href="#" class="app-logo" data-page="home">
+                    <i class="fas fa-gem"></i>
+                    <span>بازار لوکس</span>
+                </a>
+                <div class="header-actions">
+                    <button class="icon-btn" id="notification-btn">
+                        <i class="far fa-bell"></i>
+                        <span class="badge">3</span>
+                    </button>
+                    <button class="icon-btn" id="search-btn">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main>
+            <!-- Home Page -->
+            <div class="page active" id="home-page">
+                <div class="search-container">
+                    <input type="text" class="search-input" placeholder="جستجوی محصولات لوکس...">
+                    <div class="search-icon">
+                        <i class="fas fa-search"></i>
+                    </div>
+                </div>
+
+                <h2 class="section-title">
+                    دسته‌بندی‌های ویژه
+                    <a href="#" class="see-all">
+                        <i class="fas fa-chevron-left"></i>
+                        مشاهده همه
+                    </a>
+                </h2>
+                <div class="categories-grid">
+                    <a href="#" class="category-card" data-category="watches">
+                        <div class="category-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="category-name">ساعت‌های لوکس</div>
+                    </a>
+                    <a href="#" class="category-card" data-category="jewelry">
+                        <div class="category-icon">
+                            <i class="fas fa-gem"></i>
+                        </div>
+                        <div class="category-name">جواهرات</div>
+                    </a>
+                    <a href="#" class="category-card" data-category="cars">
+                        <div class="category-icon">
+                            <i class="fas fa-car"></i>
+                        </div>
+                        <div class="category-name">خودروهای کلاسیک</div>
+                    </a>
+                    <a href="#" class="category-card" data-category="art">
+                        <div class="category-icon">
+                            <i class="fas fa-palette"></i>
+                        </div>
+                        <div class="category-name">آثار هنری</div>
+                    </a>
+                    <a href="#" class="category-card" data-category="real-estate">
+                        <div class="category-icon">
+                            <i class="fas fa-home"></i>
+                        </div>
+                        <div class="category-name">املاک اختصاصی</div>
+                    </a>
+                    <a href="#" class="category-card" data-category="fashion">
+                        <div class="category-icon">
+                            <i class="fas fa-tshirt"></i>
+                        </div>
+                        <div class="category-name">مد برند</div>
+                    </a>
+                    <a href="#" class="category-card" data-category="wine">
+                        <div class="category-icon">
+                            <i class="fas fa-wine-glass-alt"></i>
+                        </div>
+                        <div class="category-name">شراب‌های نایاب</div>
+                    </a>
+                    <a href="#" class="category-card" data-category="more">
+                        <div class="category-icon">
+                            <i class="fas fa-ellipsis-h"></i>
+                        </div>
+                        <div class="category-name">بیشتر</div>
+                    </a>
+                </div>
+
+                <h2 class="section-title">
+                    کالاهای ویژه
+                    <a href="#" class="see-all">
+                        <i class="fas fa-chevron-left"></i>
+                        مشاهده همه
+                    </a>
+                </h2>
+                <div class="products-grid">
+                    <div class="product-card">
+                        <div class="product-badge">VIP</div>
+                        <img src="https://images.unsplash.com/photo-1523170335258-f5ed11844a49?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" alt="ساعت" class="product-image">
+                        <div class="product-details">
+                            <div class="product-price">۱۲۵,۰۰۰ دلار</div>
+                            <div class="product-title">ساعت رولکس دیتونا پلاتینیوم الماس نشان</div>
+                            <div class="product-location">
+                                <i class="fas fa-map-marker-alt"></i>
+                                دبی
+                            </div>
+                        </div>
+                    </div>
+                    <div class="product-card">
+                        <div class="product-badge">NEW</div>
+                        <img src="https://images.unsplash.com/photo-1605100804763-247f67b3557e?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" alt="گردنبند" class="product-image">
+                        <div class="product-details">
+                            <div class="product-price">۸۵,۰۰۰ دلار</div>
+                            <div class="product-title">گردنبند الماس ۵ قیراطی طرح ویژه</div>
+                            <div class="product-location">
+                                <i class="fas fa-map-marker-alt"></i>
+                                تهران
+                            </div>
+                        </div>
+                    </div>
+                    <div class="product-card">
+                        <img src="https://images.unsplash.com/photo-1502877338535-766e1452684a?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" alt="ماشین" class="product-image">
+                        <div class="product-details">
+                            <div class="product-price">۴۵۰,۰۰۰ دلار</div>
+                            <div class="product-title">پورشه ۹۱۱ کاررا مدل ۱۹۷۳ کلاسیک</div>
+                            <div class="product-location">
+                                <i class="fas fa-map-marker-alt"></i>
+                                استانبول
+                            </div>
+                        </div>
+                    </div>
+                    <div class="product-card">
+                        <div class="product-badge">RARE</div>
+                        <img src="https://images.unsplash.com/photo-1534215754734-39e80010e5c6?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" alt="نقاشی" class="product-image">
+                        <div class="product-details">
+                            <div class="product-price">۱,۲۵۰,۰۰۰ دلار</div>
+                            <div class="product-title">تابلو نقاشی اصل از پیکاسو سال ۱۹۳۲</div>
+                            <div class="product-location">
+                                <i class="fas fa-map-marker-alt"></i>
+                                پاریس
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Messages Page -->
+            <div class="page" id="messages-page">
+                <h2 class="section-title">پیام‌های شما</h2>
+                <div class="messages-list">
+                    <div class="message-card">
+                        <div class="message-avatar">ر</div>
+                        <div class="message-content">
+                            <div class="message-header">
+                                <div style="display: flex; align-items: center;">
+                                    <div class="unread-badge"></div>
+                                    <div class="message-sender">رضا موسوی</div>
+                                </div>
+                                <div class="message-time">دیروز</div>
+                            </div>
+                            <div class="message-text">سلام، ساعت رولکس هنوز موجوده؟ می‌تونم پیشنهاد قیمت بدم؟</div>
+                        </div>
+                    </div>
+                    <div class="message-card">
+                        <div class="message-avatar">ن</div>
+                        <div class="message-content">
+                            <div class="message-header">
+                                <div class="message-sender">نیلوفر جعفری</div>
+                                <div class="message-time">۲ روز پیش</div>
+                            </div>
+                            <div class="message-text">گردنبند رو می‌تونم با قیمت ۸۰,۰۰۰ دلار بخرم؟</div>
+                        </div>
+                    </div>
+                    <div class="message-card">
+                        <div class="message-avatar">م</div>
+                        <div class="message-content">
+                            <div class="message-header">
+                                <div style="display: flex; align-items: center;">
+                                    <div class="unread-badge"></div>
+                                    <div class="message-sender">مجید رضایی</div>
+                                </div>
+                                <div class="message-time">۳ روز پیش</div>
+                            </div>
+                            <div class="message-text">آیا امکان بازدید از تابلو پیکاسو در پاریس وجود داره؟</div>
+                        </div>
+                    </div>
+                    <div class="message-card">
+                        <div class="message-avatar">ع</div>
+                        <div class="message-content">
+                            <div class="message-header">
+                                <div class="message-sender">علی محمدی</div>
+                                <div class="message-time">۱ هفته پیش</div>
+                            </div>
+                            <div class="message-text">سلام، ماشین کلاسیک رو می‌تونم فردا بیام ببینم؟</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add Product Page -->
+            <div class="page" id="add-page">
+                <h2 class="section-title">ثبت کالای لوکس</h2>
+                <div class="form-group">
+                    <label for="product-title" class="form-label">عنوان کالا</label>
+                    <input type="text" id="product-title" class="form-control" placeholder="مثال: ساعت رولکس دیتونا پلاتینیوم">
+                </div>
+                <div class="form-group">
+                    <label for="product-category" class="form-label">دسته‌بندی</label>
+                    <select id="product-category" class="form-control">
+                        <option value="">انتخاب کنید</option>
+                        <option value="watches">ساعت‌های لوکس</option>
+                        <option value="jewelry">جواهرات</option>
+                        <option value="cars">خودروهای کلاسیک</option>
+                        <option value="art">آثار هنری</option>
+                        <option value="real-estate">املاک اختصاصی</option>
+                        <option value="fashion">مد برند</option>
+                        <option value="wine">شراب‌های نایاب</option>
+                        <option value="other">سایر</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="product-price" class="form-label">قیمت (دلار)</label>
+                    <input type="number" id="product-price" class="form-control" placeholder="مثال: 125000">
+                </div>
+                <div class="form-group">
+                    <label for="product-description" class="form-label">توضیحات کامل</label>
+                    <textarea id="product-description" class="form-control" rows="5" placeholder="شرح کامل کالا، تاریخچه، شرایط فروش و هر اطلاعات مرتبط دیگر"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">عکس‌های با کیفیت (حداکثر ۱۰ تصویر)</label>
+                    <div class="image-upload">
+                        <i class="fas fa-camera"></i>
+                        <div class="image-upload-text">برای آپلود عکس کلیک کنید</div>
+                    </div>
+                </div>
+                <button class="btn btn-primary">ثبت کالای لوکس</button>
+            </div>
+
+            <!-- Profile Page -->
+            <div class="page" id="profile-page">
+                <div class="profile-header">
+                    <div class="profile-avatar">م</div>
+                    <div class="edit-avatar">
+                        <i class="fas fa-pencil-alt"></i>
+                    </div>
+                    <div class="profile-name">محمد رضایی</div>
+                    <div class="profile-location">
+                        <i class="fas fa-map-marker-alt"></i>
+                        تهران، ایران
+                    </div>
+                </div>
+
+                <div class="profile-stats">
+                    <div class="stat-item">
+                        <div class="stat-value">۸</div>
+                        <div class="stat-label">کالاها</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">۱۲۴</div>
+                        <div class="stat-label">پسندیده‌ها</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">۴.۹</div>
+                        <div class="stat-label">امتیاز</div>
+                    </div>
+                </div>
+
+                <div class="profile-menu">
+                    <a href="#" class="menu-item">
+                        <i class="far fa-user"></i>
+                        <div class="menu-item-text">پروفایل اختصاصی</div>
+                        <i class="fas fa-chevron-left menu-item-arrow"></i>
+                    </a>
+                    <a href="#" class="menu-item">
+                        <i class="far fa-heart"></i>
+                        <div class="menu-item-text">لیست علاقه‌مندی‌ها</div>
+                        <i class="fas fa-chevron-left menu-item-arrow"></i>
+                    </a>
+                    <a href="#" class="menu-item">
+                        <i class="fas fa-gem"></i>
+                        <div class="menu-item-text">کالاهای من</div>
+                        <i class="fas fa-chevron-left menu-item-arrow"></i>
+                    </a>
+                    <a href="#" class="menu-item">
+                        <i class="far fa-bell"></i>
+                        <div class="menu-item-text">تنظیمات اعلان‌ها</div>
+                        <i class="fas fa-chevron-left menu-item-arrow"></i>
+                    </a>
+                    <a href="#" class="menu-item">
+                        <i class="fas fa-cog"></i>
+                        <div class="menu-item-text">تنظیمات حساب</div>
+                        <i class="fas fa-chevron-left menu-item-arrow"></i>
+                    </a>
+                    <a href="#" class="menu-item">
+                        <i class="far fa-question-circle"></i>
+                        <div class="menu-item-text">پشتیبانی ویژه</div>
+                        <i class="fas fa-chevron-left menu-item-arrow"></i>
+                    </a>
+                </div>
+
+                <button class="btn" style="background-color: rgba(239, 68, 68, 0.1); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.3);">
+                    <i class="fas fa-sign-out-alt"></i> خروج از حساب
+                </button>
+            </div>
+        </main>
+
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav">
+            <a href="#" class="nav-item active" data-page="home">
+                <i class="fas fa-home"></i>
+                <span>خانه</span>
+            </a>
+            <a href="#" class="nav-item" data-page="messages">
+                <i class="far fa-comment-dots"></i>
+                <span>پیام‌ها</span>
+            </a>
+            <a href="#" class="nav-item" data-page="add">
+                <i class="fas fa-plus-circle"></i>
+                <span>ثبت کالا</span>
+            </a>
+            <a href="#" class="nav-item" data-page="profile">
+                <i class="far fa-user"></i>
+                <span>پروفایل</span>
+            </a>
+        </nav>
+    </div>
+
+    <!-- Service Worker and PWA Scripts -->
+    <script>
+        // Register Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js').then(registration => {
+                    console.log('ServiceWorker registration successful');
+                }).catch(err => {
+                    console.log('ServiceWorker registration failed: ', err);
+                });
+            });
+        }
+
+        // Check network status
+        window.addEventListener('online', updateOnlineStatus);
+        window.addEventListener('offline', updateOnlineStatus);
+
+        function updateOnlineStatus() {
+            const offlineNotice = document.getElementById('offline-notice');
+            if (navigator.onLine) {
+                offlineNotice.style.display = 'none';
+            } else {
+                offlineNotice.style.display = 'block';
+            }
+        }
+
+        // Initial check
+        updateOnlineStatus();
+
+        // Splash screen
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                const splash = document.getElementById('splash-screen');
+                splash.style.opacity = '0';
+                setTimeout(() => {
+                    splash.style.display = 'none';
+                }, 500);
+            }, 2000);
+        });
+
+        // Page Navigation
+        document.querySelectorAll('[data-page]').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const pageId = this.getAttribute('data-page');
+
+                // Hide all pages
+                document.querySelectorAll('.page').forEach(page => {
+                    page.classList.remove('active');
+                });
+
+                // Show selected page
+                document.getElementById(`${pageId}-page`).classList.add('active');
+
+                // Update active nav item
+                document.querySelectorAll('.nav-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+
+                this.classList.add('active');
+
+                // Scroll to top
+                window.scrollTo(0, 0);
+            });
+        });
+
+        // Search button
+        document.getElementById('search-btn').addEventListener('click', () => {
+            document.querySelector('.search-input').focus();
+        });
+
+        // Notification button
+        document.getElementById('notification-btn').addEventListener('click', () => {
+            alert('صفحه اعلان‌های ویژه به زودی اضافه خواهد شد');
+        });
+
+        // Convert numbers to Persian
+        function convertToPersianNumbers(input) {
+            const persianNumbers = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
+            return input.toString().replace(/\d/g, (d) => persianNumbers[d]);
+        }
+
+        // Convert prices on page
+        document.querySelectorAll('.product-price, .stat-value').forEach(price => {
+            price.textContent = convertToPersianNumbers(price.textContent.replace(/\D/g, ''));
+        });
+
+        // Manifest for PWA
+        const manifest = {
+            "name": "بازار لوکس",
+            "short_name": "بازار لوکس",
+            "start_url": "/",
+            "display": "standalone",
+            "background_color": "#121212",
+            "theme_color": "#D4AF37",
+            "description": "پلتفرم خرید و فروش کالاهای لوکس و اختصاصی",
+            "icons": [
+                {
+                    "src": "/icons/icon-192x192.png",
+                    "sizes": "192x192",
+                    "type": "image/png"
+                },
+                {
+                    "src": "/icons/icon-256x256.png",
+                    "sizes": "256x256",
+                    "type": "image/png"
+                },
+                {
+                    "src": "/icons/icon-384x384.png",
+                    "sizes": "384x384",
+                    "type": "image/png"
+                },
+                {
+                    "src": "/icons/icon-512x512.png",
+                    "sizes": "512x512",
+                    "type": "image/png"
+                }
+            ]
+        };
+
+        // Add to homescreen prompt
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+
+            // Show install button (you can add this to your UI)
+            setTimeout(() => {
+                if(confirm('آیا می‌خواهید برنامه بازار لوکس را نصب کنید؟')) {
+                    deferredPrompt.prompt();
+                    deferredPrompt.userChoice.then((choiceResult) => {
+                        if (choiceResult.outcome === 'accepted') {
+                            console.log('User accepted the install prompt');
+                        } else {
+                            console.log('User dismissed the install prompt');
+                        }
+                        deferredPrompt = null;
+                    });
+                }
+            }, 10000);
+        });
+
+        // Add hover effects for desktop
+        if (window.innerWidth > 768) {
+            document.querySelectorAll('.category-card, .product-card, .message-card, .menu-item').forEach(item => {
+                item.style.cursor = 'pointer';
+            });
+        }
+    </script>
+</body>
 </html>
